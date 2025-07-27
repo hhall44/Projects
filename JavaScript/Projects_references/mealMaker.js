@@ -29,7 +29,7 @@ const menu = {
     }
   },
 };
-/* how not to edit the object. This does not do type checking and can lead to errors or customer confusion.
+/* how NOT to edit the object. This does not do type checking and can lead to errors or customer confusion.
 menu._meal = 15
 menu._price = 'Hamburger'
 console.log(menu); */
