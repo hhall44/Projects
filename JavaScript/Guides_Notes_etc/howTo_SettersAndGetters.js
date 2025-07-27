@@ -35,4 +35,63 @@ const robot = {
 robot.numOfSensors = 100;
 console.log(robot.numOfSensors);
 
+// destructuring when extracting key value pairs
+const robot = {
+  model: '1E78V2',
+  energyLevel: 100,
+  functionality: {
+    beep() {
+      console.log('Beep Boop');
+    },
+    fireLaser() {
+      console.log('Pew Pew');
+    },
+  }
+};
+const { functionality } = robot;
+functionality.beep(); // prints 'Beep Boop'
 
+// built in object methods
+const robot = {
+	model: 'SAL-1000',
+  mobile: true,
+  sentient: false,
+  armor: 'Steel-plated',
+  energyLevel: 75
+};
+
+// What is missing in the following method call?
+const robotKeys = Object.keys(robot); 
+
+console.log(robotKeys); //prints [ 'model', 'mobile', 'sentient', 'armor', 'energyLevel' ]
+
+// Declare robotEntries below this line:
+const robotEntries = Object.entries(robot);
+
+console.log(robotEntries); // prints
+/* [
+  [ 'model', 'SAL-1000' ],
+  [ 'mobile', true ],
+  [ 'sentient', false ],
+  [ 'armor', 'Steel-plated' ],
+  [ 'energyLevel', 75 ]
+] */
+
+// Declare newRobot below this line:
+const newRobot = 
+  Object.assign({},robot, {
+  laserBlaster: true,
+  voiceRecognition: true
+  }) //doesn't change the original robot object. 
+
+
+console.log(newRobot); //prints 
+/* {
+  model: 'SAL-1000',
+  mobile: true,
+  sentient: false,
+  armor: 'Steel-plated',
+  energyLevel: 75,
+  laserBlaster: true,
+  voiceRecognition: true
+} */
