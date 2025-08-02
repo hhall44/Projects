@@ -1,0 +1,1 @@
+filteredRestaurants[0]
