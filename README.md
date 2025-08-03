@@ -18,6 +18,10 @@ Some guides/notes and projects for later reference.
 
 follow along projects learning higher level JS from JavaScript 30.
 
+## React
+
+Projects, notes, etc as I learn React following online curriculum like freeCodeCamp, codecademy, YouTube video, and more.
+
 ## TypeScript
 
 TypScript specific functions as a learn from online courses on TS, building on my expierences in MSS, foundry, and codeRepo.
