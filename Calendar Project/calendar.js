@@ -3,226 +3,210 @@ const monthYearEl = document.getElementById("monthYear");
 const modalEl = document.getElementById("eventModal");
 let currentDate = new Date();
 
-
 function renderCalendar(date = new Date()) {
-    calendarEl.innerHTML = '';
-    
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const today = new Date();
+  calendarEl.innerHTML = "";
 
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const today = new Date();
 
-    const totalDays = new Date(year, month + 1, 0).getDate();
-    const firstDayOfMonth = new Date(year, month, 1).getDay();
+  const totalDays = new Date(year, month + 1, 0).getDate();
+  const firstDayOfMonth = new Date(year, month, 1).getDay();
 
-    // display month and year
-    monthYearEl.textContent = date.toLocaleDateString("en-US", {
-        month: "long",
-        year: "numeric" 
-    });
+  // display month and year
+  monthYearEl.textContent = date.toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+  });
 
-    const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thur", "Fri", "Sat"];
-    weekDays.forEach(day => {
-        const dayEl = document.createElement("div");
-        dayEl.className = "day-name";
-        dayEl.textContent = day;
-        calendarEl.appendChild(dayEl);
-    });
+  const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thur", "Fri", "Sat"];
+  weekDays.forEach((day) => {
+    const dayEl = document.createElement("div");
+    dayEl.className = "day-name";
+    dayEl.textContent = day;
+    calendarEl.appendChild(dayEl);
+  });
 
+  for (let i = 0; i < firstDayOfMonth; i++) {
+    calendarEl.appendChild(document.createElement("div"));
+  }
 
-    for (let i=0; i < firstDayOfMonth; i++) {
-        calendarEl.appendChild(document.createElement("div"));
+  // loop thru days
+  for (let day = 1; day <= totalDays; day++) {
+    const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
+      day
+    ).padStart(2, "0")}`;
+
+    const cell = document.createElement("div");
+    cell.className = "day";
+
+    if (
+      day === today.getDate() &&
+      month === today.getMonth() &&
+      year === today.getFullYear()
+    ) {
+      cell.classList.add("today");
     }
 
+    const dateEl = document.createElement("div");
 
-    // loop thru days
-    for (let day = 1; day<= totalDays; day++) {
-        const dateStr = `${year}-${String(month+1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    dateEl.className = "date-number";
+    dateEl.textContent = day;
+    cell.appendChild(dateEl);
 
-        const cell = document.createElement("div");
-        cell.className = "day";
+    const eventsToday = events.filter((e) => e.date === dateStr);
+    const eventBox = document.createElement("div");
+    eventBox.className = "events";
 
-        if (
-            day === today.getDate() &&
-            month === today.getMonth() &&
-            year === today.getFullYear()
-        ) {
-            cell.classList.add("today");
-        }
+    // render events
+    eventsToday.forEach((event) => {
+      const ev = document.createElement("div");
+      ev.className = "event";
 
-        const dateEl = document.createElement("div");
+      const eventEl = document.createElement("div");
+      eventEl.className = "event";
+      eventEl.textContent = event.title.split(" - ")[0];
 
-        dateEl.className = "date-number";
-        dateEl.textContent = day;
-        cell.appendChild(dateEl);
+      const pocEl = document.createElement("div");
 
-        const eventsToday = events.filter(e => e.date === dateStr);
-        const eventBox = document.createElement("div");
-        eventBox.className = "events";
+      pocEl.className = "point_of_contact";
+      pocEl.textContent = "👤" + event.title.split(" - ")[1];
 
+      const timeEl = document.createElement("div");
+      timeEl.className = "time";
+      timeEl.textContent = "🕑" + event.start_time + " - " + event.end_time;
 
-        // render events
-        eventsToday.forEach(event => {
-            const ev = document.createElement("div");
-            ev.className = "event";
+      ev.appendChild(eventEl);
+      ev.appendChild(pocEl);
+      ev.appendChild(timeEl);
+      eventBox.appendChild(ev);
+    });
 
-            const eventEl = document.createElement("div");
-            eventEl.className = "event";
-            eventEl.textContent = event.title.split(" - ")[0];
+    // Overlay buttons
+    const overlay = document.createElement("div");
+    overlay.className = "day-overlay";
 
-            const pocEl = document.createElement("div");
+    const addBtn = document.createElement("button");
 
-            pocEl.className = "point_of_contact";
-            pocEl.textContent = "👤" + event.title.split(" - ")[1];
+    addBtn.className = "overlay-btn";
 
-            const timeEl = document.createElement("div");
-            timeEl.className = "time"
-            timeEl.textContent = "🕑" + event.start_time + " - " + event.end_time;
+    addBtn.textContent = "+ Add";
 
-            ev.appendChild(eventEl);
-            ev.appendChild(pocEl);
-            ev.appendChild(timeEl);
-            eventBox.appendChild(ev);
-        });
+    addBtn.onclick = (e) => {
+      e.stopPropagation();
+      openModalForAdd(dateStr);
+    };
 
+    overlay.appendChild(addBtn);
 
-        // Overlay buttons
-        const overlay = document.createElement("div");
-        overlay.className = "day-overlay";
+    if (eventsToday.length > 0) {
+      const editBtn = document.createElement("button");
+      editBtn.className = "overlay-btn";
+      editBtn.textContent = "Edit";
+      editBtn.onclick = (e) => {
+        e.stopPropagation();
+        openModalForEdit(eventsToday);
+      };
 
-        const addBtn = document.createElement('button');
-
-        addBtn.className = "overlay-btn";
-
-        addBtn.textContent = "+ Add";
-
-        addBtn.onclick = e => {
-            e.stopPropagation();
-            openModalForAdd(dateStr);
-        };
-
-        overlay.appendChild(addBtn);
-
-        if (eventsToday.length > 0) {
-            const editBtn = document.createElement('button');
-            editBtn.className = "overlay-btn";
-            editBtn.textContent = "Edit";
-            editBtn.onclick = e => {
-                e.stopPropagation();
-                openModalForEdit(eventsToday);
-            };
-
-            overlay.appendChild(editBtn);
-        }
-
-        cell.appendChild(overlay);
-        cell.appendChild(eventBox);
-        calendarEl.appendChild(cell);
-
+      overlay.appendChild(editBtn);
     }
+
+    cell.appendChild(overlay);
+    cell.appendChild(eventBox);
+    calendarEl.appendChild(cell);
+  }
 }
-
 
 // add event modal
 function openModalForAdd(dateStr) {
-    document.getElementById("formAction").value = "add";
-    document.getElementById("eventId").value = "";
-    document.getElementById("deleteEventId").value = "";
-    document.getElementById("eventName").value = "";
-    document.getElementById("POC").value = "";
-    document.getElementById("startDate").value = dateStr;
-    document.getElementById("endDate").value = dateStr;
-    document.getElementById("startTime").value = "09:00";
-    document.getElementById("endTime").value = "10:00";
+  document.getElementById("formAction").value = "add";
+  document.getElementById("eventId").value = "";
+  document.getElementById("deleteEventId").value = "";
+  document.getElementById("eventName").value = "";
+  document.getElementById("POC").value = "";
+  document.getElementById("startDate").value = dateStr;
+  document.getElementById("endDate").value = dateStr;
+  document.getElementById("startTime").value = "09:00";
+  document.getElementById("endTime").value = "10:00";
 
+  const selector = document.getElementById("eventSelector");
+  const wrapper = document.getElementById("eventSelectorWrapper");
 
-    const selector = document.getElementById("eventSelector");
-    const wrapper = document.getElementById("eventSelectorWrapper");
+  if (selector && wrapper) {
+    selector.innerHTML = "";
+    wrapper.style.display = "none";
+  }
 
-
-    if (selector && wrapper) {
-        selector.innerHTML = "";
-        wrapper.style.display = "none";
-    }
-
-    modalEl.style.display = "flex";
+  modalEl.style.display = "flex";
 }
 
-
-
-// edit event modal 
+// edit event modal
 function openModalForEdit(eventsOnDate) {
-    document.getElementById("formAction").value = "edit";
-    modalEl.style.display = "flex";
+  document.getElementById("formAction").value = "edit";
+  modalEl.style.display = "flex";
 
-    const selector = document.getElementById("eventSelector");
-    const wrapper = document.getElementById("eventSelectorWrapper");
-    selector.innerHTML = "<option disabled selected>Chose event...</option>";
+  const selector = document.getElementById("eventSelector");
+  const wrapper = document.getElementById("eventSelectorWrapper");
+  selector.innerHTML = "<option disabled selected>Chose event...</option>";
 
+  eventsOnDate.forEach((e) => {
+    const option = document.createElement("option");
+    option.value = JSON.stringify(e);
+    option.textContent = `${e.title} (${e.start} → ${e.end})`;
+    selector.appendChild(option);
+  });
 
-    eventsOnDate.forEach(e => {
-        const option = document.createElement("option");
-        option.value = JSON.stringify(e);
-        option.textContent = `${e.title} (${e.start} → ${e.end})`;
-        selector.appendChild(option)
-    });
+  if (eventsOnDate.length > 1) {
+    wrapper.style.display = "block";
+  } else {
+    wrapper.style.display = "none";
+  }
 
-
-    if (eventsOnDate.length > 1) {
-        wrapper.style.display = "block";
-    } else {
-        wrapper.style.display = "none";
-    }
-
-    handleEventSelection(JSON.stringify(eventsOnDate[0]));
+  handleEventSelection(JSON.stringify(eventsOnDate[0]));
 }
 
 // populate form from selected event
 function handleEventSelection(eventJSON) {
-    const event = JSON.parse(eventJSON);
+  const event = JSON.parse(eventJSON);
 
-    document.getElementById("eventId").value = event.id;
-    document.getElementById("deleteEventId").value = event.id;
+  document.getElementById("eventId").value = event.id;
+  document.getElementById("deleteEventId").value = event.id;
 
-
-    const [calEvent, POC] = event.title.split(" - ").map(e => e.trim());
-    document.getElementById("eventName").value = calEvent || "";
-    document.getElementById("POC").value = POC || "";
-    document.getElementById("startDate").value = event.start || "";
-    document.getElementById("endDate").value = event.end || "";
-    document.getElementById("startTime").value = event.start_time || "";
-    document.getElementById("endTime").value = event.end_time || "";
+  const [calEvent, POC] = event.title.split(" - ").map((e) => e.trim());
+  document.getElementById("eventName").value = calEvent || "";
+  document.getElementById("POC").value = POC || "";
+  document.getElementById("startDate").value = event.start || "";
+  document.getElementById("endDate").value = event.end || "";
+  document.getElementById("startTime").value = event.start_time || "";
+  document.getElementById("endTime").value = event.end_time || "";
 }
-
 
 function closeModal() {
-    modalEl.style.display = "none";
+  modalEl.style.display = "none";
 }
 
-
-// month navigation 
+// month navigation
 function changeMonth(offset) {
-    currentDate.setMonth(currentDate.getMonth() + offset);
-    renderCalendar(currentDate);
+  currentDate.setMonth(currentDate.getMonth() + offset);
+  renderCalendar(currentDate);
 }
 
 // live clock
 function updateClock() {
-    const now = new Date();
-    const clock = document.getElementById("clock");
-    clock.textContent = [
-        now.getHours().toString().padStart(2, "0"),
-        now.getMinutes().toString().padStart(2, "0"),
-        now.getSeconds().toString().padStart(2, "0"),
-    ].join(":");
+  const now = new Date();
+  const clock = document.getElementById("clock");
+  clock.textContent = [
+    now.getHours().toString().padStart(2, "0"),
+    now.getMinutes().toString().padStart(2, "0"),
+    now.getSeconds().toString().padStart(2, "0"),
+  ].join(":");
 }
 
-
-// initilization 
+// initilization
 renderCalendar(currentDate);
 updateClock(); //invoke the function update clock
 setInterval(updateClock, 1000);
 
 // Assign nav button click handlers
 document.querySelectorAll(".nav-btn")[0].onclick = () => changeMonth(-1); // ← button
-document.querySelectorAll(".nav-btn")[1].onclick = () => changeMonth(1);  // → button
+document.querySelectorAll(".nav-btn")[1].onclick = () => changeMonth(1); // → button

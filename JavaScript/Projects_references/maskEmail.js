@@ -1,12 +1,11 @@
 function maskEmail(email) {
-    const atIndex = email.indexOf('@');
-    const username = email.slice(0, atIndex);
-    const domain = email.slice(atIndex);
-    const maskedUsername = username.slice(0, 1) + "*".repeat(username.length - 2);
-    const lastChar = username.slice(-1);
+  const atIndex = email.indexOf("@");
+  const username = email.slice(0, atIndex);
+  const domain = email.slice(atIndex);
+  const maskedUsername = username.slice(0, 1) + "*".repeat(username.length - 2);
+  const lastChar = username.slice(-1);
 
-    return maskedUsername + lastChar + domain;
-
+  return maskedUsername + lastChar + domain;
 }
 
 let email = "testemail@email.com";
