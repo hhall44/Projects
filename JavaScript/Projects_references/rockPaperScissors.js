@@ -24,7 +24,7 @@ function getComputerChoice() {
 
 function determineWinner(userChoice, computerChoice) {
   if(userChoice == 'bomb') {
-    return ('Boom! You found the secret to how America wins!'); 
+    return ('Boom! You found the secret to always win!'); 
   }
   if(computerChoice == 'bomb') {
     return ('You lose! The computer figured out how to use bombs!');
